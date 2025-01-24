@@ -1,0 +1,331 @@
+<!-- Make YouTube Video On This Fast. This is New So You Have To make a YouTube Video On this Soon.. it contains SweetAlert as well -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code With Er. Prabhat Pandit</title>
+    <link rel="icon" href="assets/images/favicon.ico" type="image/jpg">
+
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font-awesome CSS CDN -->
+    <link href="assets/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- React and ReactDOM CDN -->
+    <script src="assets/js/react.development.js"></script>
+    <script src="assets/js/react-dom.development.js"></script>
+
+    <!-- Babel CDN for JSX support -->
+    <script src="assets/js/babel.min.js"></script>
+
+    <!-- jQuery CDN (required for Owl Carousel) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+
+    <!-- Owl Carousel CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        .item {
+            position: relative;
+        }
+        .image-container{
+            width: 100%;
+            height: 290px;
+            overflow: hidden;
+        }
+        img {
+        display: flex;
+        margin: 0 auto;
+        height: 40vh;
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        }
+        
+        .title{
+            font-size: 18px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;     /* Limits to 2 lines */
+            line-clamp: 2;
+            overflow: hidden;
+            text-overflow: ellipsis;   /* Adds "..." at the end */
+            max-height: 4.5em;
+            line-height: 25px;
+        }
+        .thumbnail{
+          width: 200px;
+        }
+        .fa-star{
+            color: gold;
+        }
+        .fa-star-o{
+            color: rgb(255, 0, 43);
+        }
+        /* owl carousel slider stylesheet starts from here */
+    
+                button.owl-prev {
+                    background: black !important;
+                    height: 30px;
+                    width: 30px;
+                    padding: 10px;
+                    text-align: center;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    align-content: center;
+                    position: absolute;
+                    float: left;
+                    left: 0px;
+                    top: 45%;
+                    border-radius: 0px !important;
+                }
+                button span {
+                    text-align: center;
+                    color: #fff;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    align-content: center;
+                }
+    
+                button.owl-next{
+                    background: black !important;
+                    height: 30px;
+                    width: 30px;
+                    padding: 10px;
+                    text-align: center;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    align-content: center;
+                    position: absolute;
+                    float: right;
+                    right: 0px;
+                    top: 45%;
+                    border-radius: 0px !important;
+                }
+      </style>
+
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+
+        // Importing individually
+        const { useState, useEffect, StrictMode } = React;
+
+
+                const Card = ({ slide, onBuyNow }) => {
+                const { id, image, content, price, ratings } = slide;
+
+                //Props destructuring ({ id, image, content, price, ratings }) makes the code cleaner.
+
+                return (
+                    <div className="item card">
+                    <h4 className="text-center">Slide {id}</h4>
+                    <div className="image-container">
+                        <img src={image} alt={`Slide ${id}`} className="img-fluid product-image" />
+                    </div>
+                    <div className="p-3">
+                        <h4 className="title">{content}</h4>
+                        <h4>{price}</h4>
+                        <div className="ratings mb-3">
+                        {ratings.map((ratingClass, index) => (
+                            <i key={index} className={`fa fa-2x mx-1 ${ratingClass}`}></i>
+                        ))}
+                        </div>
+                        <button onClick={() => onBuyNow(slide)} className="btn btn-warning mt-3">
+                         See Details
+                        </button>
+                    </div>
+                    </div>
+                );
+                };
+
+
+    
+    
+        const CarouselComponent = () => {
+          // Data array for carousel items
+          const slides = [
+            { id: 1, image: "assets/images/lappy.webp", content: 'Asus Vivobook Go 14 Intel Celeron Dual Core', 
+            price : "₹15,999.00",
+            ratings:['fa-star','fa-star','fa-star','fa-star-o','fa-star-o']
+            },
+            { id: 2, image: "assets/images/lappy_1.webp", content: 'Lenovo IdeaPad HD Thin and Light Laptop', 
+            price : "₹46,999.00",
+            ratings:['fa-star','fa-star','fa-star','fa-star','fa-star-o']
+            },
+            { id: 3, image: "assets/images/lappy_2.webp", content: 'Acer Aspire 7 Intel Core I5 12th Gen 12450h', 
+            price : "₹300,999.00",
+            ratings:['fa-star','fa-star','fa-star-o','fa-star-o','fa-star-o']
+            },
+            { id: 4, image: "assets/images/lappy_3.webp", content: 'HONOR MagicBook X16 Pro 2024, 13th Gen Intel Core i5-13420H', 
+            price : "₹150,999.00",
+            ratings:['fa-star','fa-star-o','fa-star-o','fa-star-o','fa-star-o']
+            },
+            { id: 5, image: "assets/images/lappy_4.webp", content: 'AXL VayuBook Laptop 14.1 Inch FHD IPS Display 4GB Ram,128GB', 
+            price : "₹15,999.00",
+            ratings:['fa-star','fa-star','fa-star','fa-star-o','fa-star-o']
+            },
+            { id: 6, image: "assets/images/shopping (1).webp", content: 'Laptop Windows 11/10 Pro Intel 16G RAM 128G/256G/512G/1T SSD Fingerprint Locks PC', 
+            price : "₹15,999.00",
+            ratings:['fa-star','fa-star','fa-star-o','fa-star-o','fa-star-o']
+            },
+            { id: 7, image: "assets/images/shopping (2).webp", content: 'Dell Latitude 7300 Touch Screen 13.3" FHD i7-8665U 1.9GHz 16GB', 
+            price : "₹15,999.00",
+            ratings:['fa-star','fa-star','fa-star','fa-star','fa-star-o']
+            },
+            { id: 8, image: "assets/images/shopping (4).webp", content: 'Acer Recertified Aspire 7 gaming laptop', 
+            price : "₹15,999.00",
+            ratings:['fa-star','fa-star','fa-star','fa-star','fa-star-o']
+            },
+            { id: 9, image: "assets/images/shopping (6).webp", content: 'HONOR MagicBook X16 Pro 2024, 13th Gen Intel Core i5-13420H', 
+            price : "₹15,999.00",
+            ratings:['fa-star','fa-star','fa-star','fa-star','fa-star-o']
+           },
+    
+            
+          ];
+    
+           
+           
+           // In this component, useEffect(() => {}, []) is used to initialize the Owl Carousel when the component mounts. Here’s why:
+    
+           // This is useful for initializing third-party libraries or plugins like Owl Carousel, 
+           //which need to run only once per component instance.
+    
+           useEffect(() => {
+            // Initialize Owl Carousel when component mounts
+            $('.owl-carousel').owlCarousel({
+              loop: true,
+              margin: 20,
+              nav: true,
+              dots: true,
+              items : 5,
+              rewind : false,
+              autoplayHoverPause : true,
+              center : false,
+              autoplay: true,
+              responsive: {
+                0: { 
+                    items: 1,
+                    nav:true,
+                    loop:true
+                }, 
+                600: { 
+                    items: 2,
+                    nav:true,
+                    loop:true
+                },
+                1000: { 
+                    items: 3,
+                    nav:true,
+                    loop:true
+                },
+                1200: { 
+                    items: 4,
+                    nav:true,
+                    loop:true
+                },
+                1300: { 
+                    items: 5,
+                    nav:true,
+                    loop:true
+                }
+    
+              }
+            });
+          }, []); // Only run once when component mounts. // Only run once
+    
+           const header = "Welcome To React.js Classes With Er. Prabhat Pandit.";
+           const title = "How to Create a Responsive Product Slider in React.js Using Owl Carousel";
+    
+           const AlertName = (slide, index) => {
+            //   alert("NAME : => " + slide.content + "," + " PRICE" + " : => " + slide.price);
+              Swal.fire({
+                        title: slide.content,
+                        text: slide.price,
+                        imageUrl: slide.image,
+                        imageWidth: 400,
+                        imageHeight: "auto",
+                        imageAlt: "Custom image",
+                        showCancelButton: false,
+                        confirmButtonColor: "#3085d6",
+                        cancelButtonColor: "#d33",
+                        confirmButtonText: "Ok, Got it!",
+                        showClass: {
+                                    popup: `
+                                    animate__animated
+                                    animate__fadeInUp
+                                    animate__faster
+                                    `
+                                },
+                                hideClass: {
+                                    popup: `
+                                    animate__animated
+                                    animate__fadeOutDown
+                                    animate__faster
+                                    `
+                                }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                Swal.fire({
+                                title: "Thanks a lot",
+                                // text: "Your file has been deleted.",
+                                icon: "success"
+                                });
+                            }
+                            });
+                    };   
+          
+          return (
+            <div className="container-fluid mt-3 mb-3">
+    
+                <div className="mt-3 mb-3 text-center">
+                        <h1>{header}</h1>
+                </div>
+    
+                <div className="mt-4 mb-4 text-center">
+                        <h2>{title}</h2>
+                </div>
+    
+                <div className="owl-carousel owl-theme">
+                    {slides.map((slide) => (
+                    <Card key={slide.id} slide={slide} onBuyNow={AlertName} />
+                    ))}
+                </div>
+            
+            </div>
+          );
+        };
+    
+    
+        // Use ReactDOM.createRoot for React 18
+        const rootElement = document.getElementById('root');
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<StrictMode><CarouselComponent /></StrictMode>);
+    
+        
+      </script>
+    
+</body>
+</html>
