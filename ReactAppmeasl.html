@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code With Er. Prabhat Pandit</title>
+
+    <link rel="icon" href="assets/images/favicon.ico" type="image/jpg">
+
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="assets/js/react.development.js"></script>
+    <script src="assets/js/react-dom.development.js"></script>
+    <script src="assets/js/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        .skeleton {
+            background: #e0e0e0;
+            border-radius: 4px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        .skeleton-img {
+            width: 100%;
+            height: 200px;
+        }
+        .skeleton-text {
+            width: 80%;
+            height: 20px;
+            margin: 10px 0;
+        }
+       .pill-container{
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(80px, auto));
+            justify-content: center;
+        }
+        .text-pill {
+            background:#2f46eb;
+            color: #fff;
+            border-radius: 30px;
+            cursor: pointer;
+            padding: 5px 15px;
+            margin: 0 5px;
+            text-align: center;
+            font-size: 17px;
+            text-transform: uppercase;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .text-pill:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .active{
+            background-color: dodgerblue !important;
+            color: #fff;
+            border-color: #fff;
+            border-width: 3px;
+            border-style:dashed;
+        }
+        .heart-beat {
+            display: inline-block;
+            color: red;
+            font-size: 1rem;
+            animation: heart-beat 1s infinite;
+        }
+        @keyframes heart-beat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            25% {
+                transform: scale(1.2);
+            }
+            50% {
+                transform: scale(1);
+            }
+            75% {
+                transform: scale(1.2);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    
+    <script type="text/babel">
+
+     const { useState, StrictMode, useEffect} = React;
+
+     // Component 1
+     const Form = ({query, handleQueryChange, fetchRecipe}) =>{
+
+        return(
+            <div className="input-group mt-3 mb-3">
+               <input 
+                type="search"
+                className="form-control p-2"
+                placeholder="Please Enter Recipe Name..."
+                value={query}
+                onChange={handleQueryChange}
+                onKeyDown={(e)=>{
+                    if(e.key === "Enter") fetchRecipe(query);
+                }}
+               />  
+               <button className="btn btn-warning p-2" onClick={()=> fetchRecipe(query)}>Search Recipe</button>  
+            </div>
+        );
+
+     };
+
+     // Component 2
+
+     const Suggestion = ({handleClick, activeindex}) => {
+
+        const suggestions = ['pork','egg', 'salad', 'chicken', 'burger', 'matar paneer', 'fish pie', 'biryani', 'cake', 'omelette', 'banana'];
+         
+        return(
+
+
+           <div className="d-flex justify-content-center text-align align-items-center mt-4 mb-4 flex-column">
+            
+               <div className="mt-3 mb-3">
+                 <h4 className="h3 text-center">
+                    Some Search Suggestion for you to get Started. Try these popular searches.
+                </h4>
+               </div>
+
+               <div className="mt-3 d-flex pill-container mb-3 justify-content-center align-items-center flex-row">
+                
+                {
+                    suggestions.map((item, index) =>(
+                        <span 
+                        className={`text-pill ${activeindex === index ? "active" : ""}`}
+                        key = {index}
+                        onClick={()=>handleClick(item, index)}
+                        >
+                           {item}
+                        </span>
+                    )) 
+                }
+                
+                </div>
+            
+            </div>
+
+        );
+     };
+
+     // third Component
+
+     const RecipeCard = ({loading, recipes, Heartbeat, OpenModal}) => {
+
+        return(
+
+            <>
+
+             {loading && <Loader />}
+              
+             {!loading && recipes.length > 0 && recipes.map((recipe, index) => (
+                <div className="col-lg-3 col-md-3 mt-3 mb-3" key={recipe.idMeal}>
+                   <div className="card overflow-hidden text-left h-100">
+                    
+                     <img src={recipe.strMealThumb} className="img-fluid thumbnail" alt={recipe.strMeal} />
+
+                     <div className="p-3 text-left">
+                        
+                        <h5 className="text-left h5">{recipe.strMeal}</h5>
+                        <p><strong>Category : </strong>{recipe.strCategory}</p>
+                        <p><strong>Cuisine : </strong>{recipe.strArea}</p>
+                        <div className="d-flex justify-content-between flex-row">
+                         <button className="btn btn-primary" onClick={()=> OpenModal(recipe, index)}>See Details</button>
+                        <Heartbeat />
+                        </div>
+                     </div>
+                        
+                    </div>    
+                </div>
+             ))}
+            </>
+
+        );
+
+
+     };
+
+      // component 4
+      const Loader = () => {
+                      
+             return(
+                <>
+                   {
+                    Array.from({length : 6}).map((_, index) => (
+                        <div className="col-lg-3 col-md-3 mt-3 mb-3" key={index}>
+                            <div className="h-100 card">
+                                <div className="skeleton skeleton-img"></div>
+                                <div className="card p-3">
+                                    <div className="skeleton skeleton-text"></div>
+                                    <div className="skeleton skeleton-text"></div>
+                                    <div className="skeleton skeleton-text"></div>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                   }
+                </>
+             );
+      };
+
+     // component 5
+     const Heartbeat = () => {
+
+        return(
+            <div className="heart-beat">
+                ❤️
+            </div>
+        );
+
+     };
+
+    // Main Component
+
+    const ReactRecipeApp = () => {
+
+        const [query, setQuery] = useState("");
+        const [recipes, setRecipes] = useState([]);
+        const [loading, setLoading] = useState(false);
+        const [error, setError] = useState(null);
+        const [activeindex, setActiveindex] = useState(null);
+
+        const header = "Welcome To React.js Classes With Er. Prabhat Pandit.";
+        const subheader = "React.js Recipe Search App Using React Components";
+
+
+        const handleQueryChange = (e) =>{
+            setQuery(e.target.value);
+        };
+
+        const fetchRecipe = async (query) => {
+
+            if(query.trim() === "") return;
+
+            setLoading(true);
+            setError(null); // Reset error before fetch
+
+            const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
+
+
+            try{
+
+                const response = await fetch(url);
+                console.log(response);
+
+                if(!response.ok){
+                    throw new Error(`HTTP Error! Error Statue : ${recipes.status}`);
+                }
+
+                const data = await response.json();
+                console.log(data);
+                if(!data.meals){
+                    setError(`No Recipe Found. Please Search Something else. ${query}`);
+                }
+                else{
+                    setRecipes(data.meals);
+                }
+            }
+            catch(error){
+                console.log(`Nothing Found`);
+                setError(`Failed To Fetch. Please Try Again Later. : ${query}`);
+            }
+            finally{
+                setLoading(false);
+            }
+
+
+            
+        };
+
+        const handleClick = (item, index) => {
+             setError(null);
+             fetchRecipe(item);
+             setActiveindex(index);
+             setQuery(item);
+        };
+
+
+        const OpenModal = (recipe, index) => {
+               Swal.fire({
+                title : recipe.strMeal,
+                html: `
+                            <h5><strong>Cuisine:</strong> ${recipe.strArea}</h5>
+                            <p><strong>Category:</strong> ${recipe.strCategory}</p>
+                            <h6>Ingredients:</h6>
+                            <ul>
+                                ${Object.keys(recipe)
+                                    .filter(key => key.startsWith('strIngredient') && recipe[key])
+                                    .map(key => `<li>${recipe[key]}</li>`)
+                                    .join(' ')}
+                            </ul>
+                        `,
+                imageUrl : recipe.strMealThumb,
+                imageWidth : 400,
+                imageHeight : "auto",
+                imageAlt : recipe.strMeal
+               });
+        };
+
+        return(
+
+             <div className="container mt-5 mb-5">
+
+                <div className="text-center mt-4 mb-4">
+                 <h1 className="h1">{header}</h1>
+                </div>
+
+                <div className="text-center mt-4 mb-4">
+                 <h2 className="h2">{subheader}</h2>
+                </div>
+
+
+                <div className="mt-3 mb-3">
+                 <Form 
+                   query = {query}
+                   handleQueryChange = {handleQueryChange}
+                   fetchRecipe = {fetchRecipe}
+                 />    
+                </div>
+
+                <div className="mt-3 mb-3">
+                  <Suggestion 
+                  handleClick = {handleClick}
+                  activeindex = {activeindex}
+                  />    
+                </div>
+
+                <div className="mt-3 row justify-content-center mb-3">
+                     <RecipeCard 
+                     loading = {loading}
+                     recipes = {recipes}
+                     Heartbeat = {Heartbeat}
+                     OpenModal = {OpenModal}
+                     />
+                </div>
+                
+                {error && <h2 className="text-center h2 text-danger">{error}</h2>}
+            </div>
+
+        );
+
+    };
+
+    const container = document.getElementById("root");
+    const root = ReactDOM.createRoot(container);
+    root.render(
+        <StrictMode>
+         <ReactRecipeApp />
+        </StrictMode>
+    );
+
+    </script>
+
+</body>
+</html>
