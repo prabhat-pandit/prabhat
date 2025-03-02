@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code With Er. Prabhat Pandit</title>
+    <link rel="icon" href="assets/images/favicon.ico" type="image/jpg">
+    <!-- Bootstrap 5 CSS for styling -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+
+    <!-- React and ReactDOM via CDN -->
+    <script src="assets/js/react.development.js"></script>
+    <script src="assets/js/react-dom.development.js"></script>
+    <script src="assets/js/babel.min.js"></script>
+
+    <style>
+        body{
+            background-color: #000000d4;
+            color: #fff;
+        }
+        .pill-container {
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(80px, auto));
+            justify-content: center;
+        }
+        .text-pill {
+            background: linear-gradient(135deg, #ed441c, #2f46eb);
+            color: #fff;
+            border-radius: 30px;
+            cursor: pointer;
+            padding: 5px 15px;
+            margin: 0 5px;
+            display: inline-block;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 700;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .text-pill:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .letter-icon{
+            margin: 0 6px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;  /* Makes the button circular */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .letter-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+        .active{
+            background:red;
+        }
+        .active1{
+            background:#f10d0d;
+            border: 3px dotted gainsboro;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    
+
+    <!-- Main React App -->
+    <script type="text/babel">
+        const { useState, StrictMode, useEffect } = React;
+
+        // SearchForm Component - Handles the input field and button
+        // Add aria-label to the input field for better screen reader support:
+        const SearchForm = ({ query, handleQueryChange, fetchRecipes }) => {
+            return (
+                <div className="input-group w-50 mx-auto mb-3 d-flex justify-content-center flex-row">
+                    <input
+                        type="search"
+                        aria-label="Recipe Search Input"
+                        className="form-control p-3"
+                        placeholder="Enter Food or Recipe Name..."
+                        value={query}
+                        onChange={handleQueryChange}
+                        onKeyDown={(e) => {
+                            if(e.key === "Enter"){
+                                fetchRecipes(query);
+                            }
+                        }}
+                    />
+                    <button 
+                        className="btn p-3 btn-primary" 
+                        onClick={() =>fetchRecipes(query)}
+                        aria-label="Search for Recipe"
+                    > 
+                        Search Recipe 
+                    </button>
+                </div>
+            );
+        };
+
+        const PillSuggestions = ({ handleClick, currentindex }) => {
+        const suggestions = ['egg', 'salad', 'chicken', 'burger', 'matar paneer', 'fish pie', 'omelette', 'fish'];
+
+        return (
+            <div className="pill-container mt-3 mb-3 d-flex flex-column justify-content-center align-items-center">
+            
+                <div className="mt-3 mb-0">
+                    <h2 className="h2">Some Search Suggestion for you to get Started. Try these popular searches</h2>    
+                </div>
+            
+            <div className="mt-0 mb-2 d-flex justify-content-center align-items-center">
+                {suggestions.map((item, index) => (
+                <span
+                    key={item}
+                    className={`text-pill ${currentindex === index ? "active1" : ""}`}
+                    onClick={() => handleClick(item, index)}
+                    role="button"
+                    aria-pressed={currentindex === index}
+                >
+                    {item.toLocaleUpperCase()}
+                </span>
+                ))}
+            </div>
+            </div>
+        );
+        }
+
+        const WordComponent = ({fetchMealsByLetter, activeindex}) => {
+
+            
+            const letters = [
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 
+            'u', 'v', 'w', 'x', 'y', 'z'
+            ];
+
+
+            return (
+            <div className="pill-container mt-3 mb-3 d-flex flex-column justify-content-center align-items-center">
+            
+                <div className="mt-3 mb-0">
+                    <h2 className="h2">Browse Meals Or Foods By Letter</h2>    
+                </div>
+            
+            <div className="mt-0 mb-2 d-flex justify-content-center align-items-center">
+                {letters.map((item, index) => (
+                <span
+                    key={item}
+                    className={`letter-icon ${activeindex === index ? "active" : ""}`}
+                    onClick={() => fetchMealsByLetter(item, index)}
+                >
+                    {item.toLocaleUpperCase()}
+                </span>
+                ))}
+            </div>
+            </div>
+        );
+        }
+
+
+
+
+        // RecipeCard Component - Displays each recipe's details
+        const RecipeCard = ({ recipe, ButtonComponent }) => {
+            return (
+                <div className="col-md-3 mb-4">
+                    <div className="card h-100">
+                        <img
+                            src={recipe.strMealThumb}
+                            className="card-img-top"
+                            alt={`Image of ${recipe.strMeal}`}
+                        />
+                        <div className="card-body">
+                            {/*
+                            <h5 className="card-title">{recipe.strMeal}</h5>
+                            <p><strong>Category:</strong> {recipe.strCategory}</p>
+                            <p><strong>Cuisine:</strong> {recipe.strArea}</p>
+                            */}
+                           <DetailsComponent  recipe={recipe} />
+                           <ButtonComponent text="See Details" href={`details.html?id=${recipe.idMeal}`} />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Button Component
+        const ButtonComponent = ({text, href}) => {
+            return(
+            <div className="btn-container">
+                <a className="btn btn-info mt-2" href={href} target="_blank" rel="noopener noreferrer">
+                   {text}
+                </a>
+            </div>
+        )
+        };
+
+         // Details Component
+         const DetailsComponent = ({recipe}) => (
+            <>
+                <h5 className="card-title">{recipe.strMeal}</h5>
+                <p><strong>Category:</strong> {recipe.strCategory}</p>
+                <p><strong>Cuisine:</strong> {recipe.strArea}</p>
+            </>
+        );
+
+        // Main Recipe Search App Component
+        function RecipeSearchApp() {
+            const [query, setQuery] = useState(''); //query: Stores the user's search input.
+            const [recipes, setRecipes] = useState([]); // Stores the list of fetched recipes.
+            const [loading, setLoading] = useState(false); // Tracks the loading state during API requests.
+            const [error, setError] = useState(null); // Captures any error messages if the fetch fails.
+            const [currentindex, setCurrentindex] = useState(null);
+
+            const [activeindex, setActiveindex] = useState(null);
+
+            // Asynchronous function to fetch recipes from the MealDB API
+            // asynchronous operations or call
+            const fetchRecipes = async (query) => {
+                // Check if the query is empty or contains only spaces. If so, do nothing and return.
+                if (query.trim() === '') return;
+
+                // Construct the API URL using the search query entered by the user
+                const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`;
+                setLoading(true);
+
+                try {
+                    // Fetch the data from the API
+                    const response = await fetch(url);
+
+                    // Parse the JSON data from the response
+                    const data = await response.json();
+                    // Log the fetched data to the console for debugging purposes
+                    console.log(data);
+
+                    if (data.meals) {
+                         // Update the state variable 'recipes' with the fetched meals data.
+                        // If 'data.meals' is null (e.g., no results found), an empty array is set to avoid errors.
+                        setRecipes(data.meals || []); // If no meals, set an empty array
+                        setError(null); // Clear previous errors
+                    } else {
+                        setRecipes([]);
+                        setError("No recipes found. Try another keyword!");
+                    }
+
+                } catch (error) {
+                    // If an error occurs during the fetch process, log it to the console
+                    console.error('Error fetching recipes:', error);
+                    setError('Failed to fetch recipes. Please try again later.');
+                }
+                finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleClick = (query, index) => {
+            fetchRecipes(query); // Directly call the function
+            setQuery(query);
+            setCurrentindex(index);
+            setActiveindex("");
+           };
+
+            const handleQueryChange = (e) => {
+                setQuery(e.target.value);
+                setCurrentindex(null);  // Reset activeindex when typing manually
+                setActiveindex(null);
+           };
+
+
+           const fetchMealsByLetter = (letter, index) => {
+                 setActiveindex(index);
+                 setLoading(true);
+                    fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            setRecipes(data.meals || []); // If no meals, set an empty array
+                            setError(null);   // Clear previous errors
+                            setLoading(false);  // Stop loading
+                        })
+                        .catch(error => {
+                            console.error('Error fetching meals:', error);
+                            setError('Failed to fetch meals. Please try again later.'); // Set error state
+                            setLoading(false);  // Stop loading
+                        });
+
+                setCurrentindex("");
+                setQuery(letter);
+                };
+
+
+           useEffect(()=> {
+            fetchMealsByLetter('A', 0); // Default to 'A' on first load
+           },[]);
+
+            return (
+                <div className="container mt-5">
+                    <h1 className="text-center mb-4">Welcome To React.js Classes With Er. Prabhat Pandit</h1>
+                    <h2 className="text-center mb-4">Advance Food and Meals Search App Using Core Concept of React.js Component</h2>
+                    
+                    {/* Search Form Component */}
+                    <SearchForm 
+                        query={query} 
+                        handleQueryChange={handleQueryChange} 
+                        fetchRecipes={fetchRecipes} 
+                       
+                    />
+
+                    {/* Search suggestion Component */}
+                    <PillSuggestions handleClick = {handleClick} currentindex = {currentindex} />
+
+
+                    <WordComponent activeindex={activeindex} fetchMealsByLetter={fetchMealsByLetter} />
+
+                    {/* Recipe Cards */}
+                    <h1 className="text-center">{query && `Meals starting with "${query.toLocaleUpperCase()}"`}</h1> 
+                    <div className="row g-4 justify-content-center">
+                            {loading ? (
+                                <div className="text-center">
+                                    <div className="spinner-border text-primary" role="status">
+                                        <span className="visually-hidden">Loading...</span>
+                                    </div>
+                                    <h1 className="h1 text-center">Loading...</h1>
+                                </div>
+                            ) : (
+                                recipes.length > 0 ? (
+                                    recipes.map((recipe) => (
+                                        <RecipeCard key={recipe.idMeal} recipe={recipe}  ButtonComponent={ButtonComponent} />
+                                    ))
+                                ) : (
+                                    <h1 className="text-center h1">No recipes found. Try searching for something else.</h1>
+                                )
+                            )}
+                        </div>
+                    {error && <h3 className="text-center text-danger">{error}</h3>}
+
+                    
+                </div>
+            );
+        }
+
+        // Render the RecipeSearchApp Component
+        // ReactDOM.createRoot(document.getElementById('root')).render(<RecipeSearchApp />);
+
+        const container = document.getElementById("root");
+        const root = ReactDOM.createRoot(container);
+        root.render(<RecipeSearchApp />);
+    </script>
+</body>
+</html>
+
+
+<!-- The issue here is that you’re using the .forEach() method incorrectly within the JSX code. .forEach() doesn’t return anything, so it’s not suitable for rendering elements in JSX. Instead, you should use .map() because it returns a new array that can be rendered in JSX.
+
+Here’s the corrected version using .map(): -->
